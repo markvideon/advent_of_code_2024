@@ -1,11 +1,11 @@
-
+import 'package:collection/collection.dart';
 import 'dart:io';
 
 void main() {
   final list = parseFile();
   int safeReports = 0;
   list.forEach((report) {
-    if (isSafeReport(report)) {
+    if (isSafeReport2(report)) {
       safeReports++;
     }
   });
@@ -27,7 +27,7 @@ List<List<int>> parseFile() {
   return result;
 }
 
-bool isSafeReport(List<int> report) {
+bool isSafeReport1(List<int> report) {
   int sign = (report[1] - report[0]).sign;
   var isMonotonic = true;
   var differenceInRange = true;
@@ -55,4 +55,25 @@ bool isSafeReport(List<int> report) {
   }
 
   return differenceInRange && isMonotonic;
+}
+
+bool isSafeReport2(List<int> report) {
+  final ogReport = isSafeReport1(report);
+
+  if (ogReport) {
+    return true;
+  } else {
+    for (int i = 0; i < report.length; i++) {
+      final withoutThisIdx = isSafeReport1(
+          report.whereNotIndexed((idx, value) => idx == i)
+              .toList(growable: false)
+      );
+
+      if (withoutThisIdx) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
